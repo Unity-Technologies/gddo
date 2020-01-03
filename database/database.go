@@ -40,6 +40,7 @@ import (
 	"net/url"
 	"os"
 	"path"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -353,10 +354,21 @@ func (db *Database) Put(ctx context.Context, pdoc *doc.Package, nextCrawl time.T
 
 	args := make([]interface{}, 0, len(paths))
 	for p := range paths {
-		args = append(args, p)
+		if shouldCrawl(p) {
+			args = append(args, p)
+		}
 	}
-	_, err = addCrawlScript.Do(c, args...)
+
+	if len(args) > 0 {
+		_, err = addCrawlScript.Do(c, args...)
+	}
 	return err
+}
+
+var crawlRe = regexp.MustCompile(`(?i)^github\.com/(Unity-Technologies|multiplay)|^[^/]+\.unity3d\.com/`)
+
+func shouldCrawl(path string) bool {
+	return crawlRe.MatchString(path)
 }
 
 // pkgIDAndImportCount returns the ID and import count of a specified package.

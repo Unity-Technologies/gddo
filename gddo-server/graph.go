@@ -13,7 +13,7 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/golang/gddo/database"
+	"github.com/Unity-Technologies/gddo/database"
 	"github.com/golang/gddo/doc"
 )
 
